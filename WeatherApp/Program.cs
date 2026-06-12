@@ -63,12 +63,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Define the default URL routing pattern
-// {controller=Home} means use HomeController by default
-// {action=Index} means use the Index method by default
+// {controller=Account} means use AccountController by default
+// {action=Login} means go straight to the Login page when the app starts
 // {id?} means id is optional
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 // Start the application
 app.Run();

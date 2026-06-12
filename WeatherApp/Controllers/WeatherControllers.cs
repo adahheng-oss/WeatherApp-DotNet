@@ -51,6 +51,7 @@ namespace WeatherApp.Controllers
                 var longitude = location.GetProperty("longitude").GetDouble();
                 var locationName = location.GetProperty("name").GetString();
                 var country = location.GetProperty("country").GetString();
+                var region = location.TryGetProperty("admin1", out var admin1) ? admin1.GetString() : "";
 
                 // Step 2: Fetch weather data using the coordinates
                 // Requesting current temperature, wind speed, humidity, and daily forecasts
@@ -71,6 +72,7 @@ namespace WeatherApp.Controllers
                 // Pass weather data to the view using ViewBag
                 ViewBag.City = locationName;
                 ViewBag.Country = country;
+                ViewBag.Region = region;
                 ViewBag.Temperature = current.GetProperty("temperature_2m").GetDouble();
                 ViewBag.Humidity = current.GetProperty("relative_humidity_2m").GetDouble();
                 ViewBag.WindSpeed = current.GetProperty("wind_speed_10m").GetDouble();

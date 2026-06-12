@@ -6,6 +6,7 @@
 @{
     // Set the page title
     ViewData["Title"] = "Weather Dashboard";
+    Layout = null;    //Removes defualt layout
 }
 
 <!DOCTYPE html>
@@ -211,7 +212,7 @@
     <div class="search-container">
         <form method="get" action="/Weather/Index" style="display:flex; gap:10px; width:100%;">
             <input type="text" name="city"
-                placeholder="Search city..."
+                placeholder="Search city"
                 value="@ViewBag.SearchedCity" />
             <button type="submit">Search</button>
         </form>
@@ -228,7 +229,7 @@
     {
         @* Current weather card *@
         <div class="weather-card">
-            <h2>@ViewBag.City, @ViewBag.Country</h2>
+            <h2>@ViewBag.City, @ViewBag.Region, @ViewBag.Country</h2>
             <p class="description">@ViewBag.WeatherDescription</p>
             <div class="temperature">@ViewBag.Temperature°F</div>
 
@@ -255,7 +256,7 @@
                     @* Display the date for this forecast day *@
                     <div class="date">@ViewBag.ForecastDates[i]</div>
                     @* Display weather description for this day *@
-                    <div class="desc">@GetDescription((int)ViewBag.ForecastCodes[i])</div>
+                    <div class="desc">@GetDescription(ViewBag.ForecastCodes[i].GetInt32())</div>
                     @* Display high and low temperatures *@
                     <div class="high">@ViewBag.ForecastMaxTemps[i]°F</div>
                     <div class="low">@ViewBag.ForecastMinTemps[i]°F</div>
