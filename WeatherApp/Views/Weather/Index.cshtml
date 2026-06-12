@@ -1,0 +1,300 @@
+@*
+    Weather Dashboard View - This is the main page users see after logging in
+    Displays current weather and a 5 day forecast for the searched city
+*@
+
+@{
+    // Set the page title
+    ViewData["Title"] = "Weather Dashboard";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Dashboard</title>
+    <style>
+        /* Reset default browser styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* Full page background with gradient */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        /* Top navigation bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        /* App title in navbar */
+        .navbar h1 { font-size: 22px; }
+
+        /* Logout button styling */
+        .logout-btn {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Logout button hover effect */
+        .logout-btn:hover { background: #c73652; }
+
+        /* Search bar container */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        /* City search input */
+        .search-container input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
+
+        /* Search input placeholder */
+        .search-container input::placeholder { color: rgba(255,255,255,0.5); }
+
+        /* Search button */
+        .search-container button {
+            padding: 12px 24px;
+            background: #e94560;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        /* Search button hover */
+        .search-container button:hover { background: #c73652; }
+
+        /* Main weather card showing current conditions */
+        .weather-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        /* City name heading */
+        .weather-card h2 { font-size: 32px; margin-bottom: 8px; }
+
+        /* Weather description text */
+        .weather-card .description {
+            color: rgba(255,255,255,0.7);
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        /* Large temperature display */
+        .weather-card .temperature {
+            font-size: 72px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        /* Container for humidity and wind speed */
+        .weather-details {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 16px;
+        }
+
+        /* Individual detail item */
+        .detail-item { text-align: center; }
+
+        /* Detail label like Humidity or Wind */
+        .detail-item .label {
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        /* Detail value */
+        .detail-item .value { font-size: 20px; font-weight: bold; }
+
+        /* 5 day forecast section heading */
+        .forecast-title {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* Container for forecast day cards */
+        .forecast-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        /* Individual forecast day card */
+        .forecast-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        /* Forecast date */
+        .forecast-card .date {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 8px;
+        }
+
+        /* Forecast weather description */
+        .forecast-card .desc {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 8px;
+        }
+
+        /* Forecast high temperature */
+        .forecast-card .high { font-size: 18px; font-weight: bold; }
+
+        /* Forecast low temperature */
+        .forecast-card .low {
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Error message styling */
+        .error {
+            background: rgba(233, 69, 96, 0.2);
+            border: 1px solid #e94560;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    @* Navigation bar with app title and logout button *@
+    <div class="navbar">
+        <h1>🌤 Weather Dashboard</h1>
+        @* Logout form - posts to AccountController Logout action *@
+        <form method="post" action="/Account/Logout">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+
+    @* City search form - submits to WeatherController Index action *@
+    <div class="search-container">
+        <form method="get" action="/Weather/Index" style="display:flex; gap:10px; width:100%;">
+            <input type="text" name="city"
+                placeholder="Search city..."
+                value="@ViewBag.SearchedCity" />
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    @* Show error message if something went wrong *@
+    @if (ViewBag.Error != null)
+    {
+        <div class="error">@ViewBag.Error</div>
+    }
+
+    @* Only show weather data if it was successfully fetched *@
+    @if (ViewBag.Temperature != null)
+    {
+        @* Current weather card *@
+        <div class="weather-card">
+            <h2>@ViewBag.City, @ViewBag.Country</h2>
+            <p class="description">@ViewBag.WeatherDescription</p>
+            <div class="temperature">@ViewBag.Temperature°F</div>
+
+            @* Humidity and wind speed details *@
+            <div class="weather-details">
+                <div class="detail-item">
+                    <div class="label">Humidity</div>
+                    <div class="value">@ViewBag.Humidity%</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">Wind Speed</div>
+                    <div class="value">@ViewBag.WindSpeed mph</div>
+                </div>
+            </div>
+        </div>
+
+        @* 5 day forecast section *@
+        <p class="forecast-title">5-Day Forecast</p>
+        <div class="forecast-container">
+            @* Loop through each day in the forecast *@
+            @for (int i = 0; i < 5; i++)
+            {
+                <div class="forecast-card">
+                    @* Display the date for this forecast day *@
+                    <div class="date">@ViewBag.ForecastDates[i]</div>
+                    @* Display weather description for this day *@
+                    <div class="desc">@GetDescription((int)ViewBag.ForecastCodes[i])</div>
+                    @* Display high and low temperatures *@
+                    <div class="high">@ViewBag.ForecastMaxTemps[i]°F</div>
+                    <div class="low">@ViewBag.ForecastMinTemps[i]°F</div>
+                </div>
+            }
+        </div>
+    }
+
+    @* Helper function to convert weather codes to descriptions inside the view *@
+    @functions {
+        public string GetDescription(int code)
+        {
+            return code switch
+            {
+                0 => "Clear Sky",
+                1 => "Mainly Clear",
+                2 => "Partly Cloudy",
+                3 => "Overcast",
+                45 => "Foggy",
+                48 => "Icy Fog",
+                51 => "Light Drizzle",
+                53 => "Moderate Drizzle",
+                55 => "Dense Drizzle",
+                61 => "Slight Rain",
+                63 => "Moderate Rain",
+                65 => "Heavy Rain",
+                71 => "Slight Snow",
+                73 => "Moderate Snow",
+                75 => "Heavy Snow",
+                80 => "Slight Showers",
+                81 => "Moderate Showers",
+                82 => "Heavy Showers",
+                95 => "Thunderstorm",
+                96 => "Thunderstorm with Hail",
+                99 => "Thunderstorm with Heavy Hail",
+                _ => "Unknown"
+            };
+        }
+    }
+
+</body>
+</html>
